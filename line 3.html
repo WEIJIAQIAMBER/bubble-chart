@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script data-require="d3@3.5.3" data-semver="3.5.3" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.3/d3.js"></script>
+    <style>
+        body {
+            font: 10px sans-serif;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .x.axis path {
+            display: none;
+        }
+
+        .line {
+            fill: none;
+            stroke: steelblue;
+            stroke-width: 1.5px;
+        }
+    </style>
+</head>
+
+<body>
+<script>
+    var myData = "date	New York	San Francisco	Austin\n\
+20111001	63.4	62.7	72.5\n\
+20111002	58.0	59.9	70.0\n\
+20111003	53.3	59.1	75.0\n\
+20111004	55.7	58.8	68.0\n\
+20111005	64.2	58.7	72.4\n\
+20111006	58.8	57.0	77.0\n\
+20111007	57.9	56.7	82.3\n\
+20111008	61.8	56.8	78.9\n\
+20111009	69.3	56.7	68.8\n\
+20111010	71.2	60.1	68.7\n\
+20111011	68.7	61.1	70.3\n\
+20111012	61.8	61.5	75.3\n\
+20111013	63.0	64.3	76.6\n\
+20111014	66.9	67.1	66.6\n\
+20111015	61.7	64.6	68.0\n\
+20111016	61.8	61.6	70.6\n\
+20111017	62.8	61.1	71.1\n\
+20111018	60.8	59.2	70.0\n\
+20111019	62.1	58.9	61.6\n\
+20111020	65.1	57.2	57.4\n\
+20111021	55.6	56.4	64.3\n\
+20111022	54.4	60.7	72.4\n";
+
+    var margin = {
+            top: 20,
+            right: 80,
+            bottom: 30,
+            left: 50
+        },
+        width = 900 - margin.left - margin.right,
+        height = 500 - margin.top - margin.bottom;
+
+    var parseDate = d3.time.format("%Y%m%d").parse;
+
+    var x = d3.time.scale()
+        .range([0, width]);
+
+    var y = d3.scale.linear()
+        .range([height, 0]);
+
+    var color = d3.scale.category10();
+
+    var xAxis = d3.svg.axis()
+        .scale(x)
+        .orient("bottom");
+
+    var yAxis = d3.svg.axis()
+        .scale(y)
+        .orient("left");
+
+    var line = d3.svg.line()
+        //.interpolate("basis") // Basis doesn't actually go through the points!
+        .x(function(d) {
+            return x(d.date);
+        })
+        .y(function(d) {
+            return y(d.temperature);
+        });
+
+    var svg = d3.select("body").append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var data = d3.tsv.parse(myData);
+
+    color.domain(d3.keys(data[0]).filter(function(key) {
+        return key !== "date";
+    }));
+
+    data.forEach(function(d) {
+        d.date = parseDate(d.date);
+    });
+
+    var cities = color.domain().map(function(name) {
+        return {
+            name: name,
+            values: data.map(function(d) {
+                return {
+                    date: d.date,
+                    temperature: +d[name]
+                };
+            })
+        };
+    });
+
+    x.domain(d3.extent(data, function(d) {
+        return d.date;
+    }));
+
+    var yDomain = [
+        d3.min(cities, function(c) {
+            return d3.min(c.values, function(v) {
+                return v.temperature;
+            });
+        }),
+        d3.max(cities, function(c) {
+            return d3.max(c.values, function(v) {
+                return v.temperature;
+            });
+        })
+    ];
+    y.domain(yDomain);
+
+    var legend = svg.selectAll('g')
+        .data(cities)
+        .enter()
+        .append('g')
+        .attr('class', 'legend');
+
+    legend.append('rect')
+        .attr('x', width - 20)
+        .attr('y', function(d, i) {
+            return i * 20;
+        })
+        .attr('width', 10)
+        .attr('height', 10)
+        .style('fill', function(d) {
+            return color(d.name);
+        });
+
+    legend.append('text')
+        .attr('x', width - 8)
+        .attr('y', function(d, i) {
+            return (i * 20) + 9;
+        })
+        .text(function(d) {
+            return d.name;
+        });
+
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis)
+        .append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("y", 6)
+        .attr("dy", ".71em")
+        .style("text-anchor", "end")
+        .text("Temperature (ºF)");
+
+    var city = svg.selectAll(".city")
+        .data(cities)
+        .enter().append("g")
+        .attr("class", "city");
+
+    city.append("path")
+        .attr("class", "line")
+        .attr("d", function(d) {
+            return line(d.values);
+        })
+        .style("stroke", function(d) {
+            return color(d.name);
+        });
+
+    city.append("text")
+        .datum(function(d) {
+            return {
+                name: d.name,
+                value: d.values[d.values.length - 1]
+            };
+        })
+        .attr("transform", function(d) {
+            return "translate(" + x(d.value.date) + "," + y(d.value.temperature) + ")";
+        })
+        .attr("x", 3)
+        .attr("dy", ".35em")
+        .text(function(d) {
+            return d.name;
+        });
+
+    var mouseG = svg.append("g")
+        .attr("class", "mouse-over-effects");
+
+    mouseG.append("path") // this is the black vertical line to follow mouse
+        .attr("class", "mouse-line")
+        .style("stroke", "black")
+        .style("stroke-width", "1px")
+        .style("opacity", "0");
+
+    var lines = document.getElementsByClassName('line');
+
+    function GetDateValue(xvalue){
+        var x0 = x.invert(xvalue);
+        console.log("DataCount: ", data.length);
+        var i = bisectDate(data, x0, 1);
+        console.log(i);
+        var d0 = data[i - 1];
+        var d1 = data[i];
+        var d = undefined;
+        if (x0 - d0.date > d1.date - x0){
+            d = d1;
+        }
+        else{
+            d = d0;
+        }
+        return d.date;
+    }
+    var interpolateCursor = true;
+
+    mouseG.append('svg:rect') // append a rect to catch mouse movements on canvas
+        .attr('width', width) // can't catch mouse events on a g element
+        .attr('height', height)
+        .attr('fill', 'none')
+        .attr('pointer-events', 'all')
+        .on('mouseout', function() { // on mouse out hide line, circles and text
+            d3.select(".mouse-line")
+                .style("opacity", "0");
+            d3.selectAll(".mouse-per-line circle")
+                .style("opacity", "0");
+            d3.selectAll(".mouse-per-line text")
+                .style("opacity", "0");
+            d3.selectAll(".tooltip-component")
+                .style("visibility", "hidden");
+        })
+        .on('mouseover', function() { // on mouse in show line, circles and text
+            d3.select(".mouse-line")
+                .style("opacity", "1");
+            d3.selectAll(".mouse-per-line circle")
+                .style("opacity", "1");
+            d3.selectAll(".mouse-per-line text")
+                .style("opacity", "1");
+            d3.selectAll(".tooltip-component")
+                .style("visibility", "visible");
+        })
+        .on('mousemove', function() { // mouse moving over canvas
+            var mouse = d3.mouse(this);
+
+            d3.select(".mouse-line")
+                .attr("d", function() {
+                    var cursorX = mouse[0];
+                    if (!interpolateCursor){
+                        var date = GetDateValue(mouse[0]);
+                        cursorX = x(date);
+                    }
+                    var d = "M" + cursorX + "," + height;
+                    d += " " + cursorX + "," + 0;
+                    return d;
+                });
+        });
+
+
+
+
+
+    var cursorToTooltipOffset = 5;
+    var updateTooltipContents = function(tooltip, tooltipValues)
+    {
+        if (!tooltipValues) return tooltip.style("display", "none");
+
+        var rows = tooltip.selectAll(".tooltip-row")
+            .data(tooltipValues, d => d.value+d.color);
+
+        var row = rows.enter().append("g")
+            .attr("class", "tooltip-row")
+            .attr("transform",  (d, i) => `translate(5, ${(i * 20 + 5)})`);
+        rows.exit().remove();
+
+        let colorSquareSize = 10;
+        row.append("rect")
+            .attr("height", colorSquareSize)
+            .attr("width", colorSquareSize)
+            .attr("fill", d => d.color);
+
+        var textMargin = 8;
+        var rowText = row.select("text");
+        row.append("text")
+            .attr("transform", `translate(${colorSquareSize+textMargin}, 0)`)
+            .attr("dominant-baseline", "hanging")
+            .attr("text-rendering", "optimizeLegibility")
+            .attr("stroke", "none")
+            .attr("fill", "white")
+            .attr("font-size", "16").append("tspan")
+            .attr("fill", "white")
+            .text(d => d.value)
+        ;
+
+        var markers = mouseG.selectAll(".cursor-data-marker")
+            .data(tooltipValues, d => d.value + d.color);
+        markers.exit().remove();
+        markers
+            .enter()
+            .append("circle")
+            .attr("class", "cursor-data-marker tooltip-component")
+            .attr("pointer-events", "none")
+            .attr("r", 3)
+            .attr("cx", d => {
+                console.log(d);
+                return x(d.date);
+            })
+            .attr("cy", (d, i) => {
+                console.log(`${d.value} => ${y(d.value)}`);
+                return y(d.value);
+            })
+            .attr("fill", (d) => d.color);
+    };
+
+    var plotArea = d3.select(".mouse-over-effects");
+    var tooltip = svg.append("g").attr("class", "tooltip tooltip-component");
+
+    tooltip.append("rect").attr("class", "tooltip-component")
+        .attr("pointer-events", "none")
+        .attr("height", 100)
+        .attr("width", 150)
+        .attr("visibility", "hidden")
+        .attr("opacity", 0.6)
+        .attr("stroke", "black");
+    var bs = d3.bisector(function(d) { return d.date; });
+    var bisectDate = bs.left;
+    svg.on("mousemove", function()
+    {
+        var mouse = d3.mouse(this);
+        var x0 = x.invert(mouse[0]);
+        var i = bisectDate(data, x0, 1);
+        var d0 = data[i - 1];
+        var d1 = data[i];
+        var d = undefined;
+        var row = undefined;
+        if (x0 - d0.date > d1.date - x0){
+            d = d1;
+            row = data[i];
+        }
+        else{
+            d = d0;
+            row = data[i-1];
+        }
+        var keys = [];
+        for (var prop in row){
+            keys.push(prop);
+        }
+        keys = keys.filter(x => x != "date");
+        var result = keys.map(k =>
+        {
+            return {date: d.date, value: row[k], color: color(k)};
+        });
+
+        var tooltipX = mouse[0];
+        if (!interpolateCursor){
+            tooltipX = x(d.date);
+        }
+        var verticalPositionPercent = 0.0;
+        var tooltipY = plotArea.node().getBBox().height*verticalPositionPercent;
+
+        tooltip
+            .attr("transform", `translate(${tooltipX+cursorToTooltipOffset}, ${tooltipY})`)
+            .call(updateTooltipContents, result);
+    });
+
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,5 @@
+objectName,reset,riskCategory1,riskCategory2,ratingCategory,ratingClassValue
+42,All-Objects,Low,Low,ratingCategory1,1
+151,All-Objects,Low,Low,ratingCategory1,1
+68,All-Objects,Low,Low,ratingCategory1,1
+128,All-Objects,Moderate,High,ratingCategory5,5

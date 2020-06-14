@@ -1,0 +1,97 @@
+library(ggplot2)
+library(dplyr)
+library(gridExtra)
+library(grid)
+library(matrixStats)
+library(RColorBrewer)
+LOLData <- read.csv("LeagueofLegends.csv")
+View(LOLData)
+l <- as.list(levels(LOLData$golddiff))
+data<- LOLData[c(6,10)]
+View(data)
+write.csv(data, file = "data.csv")
+
+
+global<-read.csv('LeagueofLegends.csv',sep=',')
+any(is.na(global))
+#number of games perleague and year
+g1<-global %>% 
+  group_by(League, Season, Year) %>% summarise(number=n()) %>% 
+  ggplot(aes(x=Year,y=number,fill=League)) + 
+  geom_histogram(stat='identity',position='stack') + 
+  scale_fill_manual(values=c("#3B9AB2", "#78B7C5", "#EBCC2A", "#E1AF00", "#F21A00","#9A8822", "#F5CDB4", "#F8AFA8")) + 
+  theme(legend.position='none')  + xlab('') + ylab('number of games')
+
+g2<-global %>% 
+  group_by(League) %>% summarise(number=n()) %>% 
+  ggplot(aes(x=reorder(League,-number),y=number,fill=League)) + 
+  geom_histogram(stat='identity') + 
+  scale_fill_manual(values=c("#3B9AB2", "#78B7C5", "#EBCC2A", "#E1AF00", "#F21A00","#9A8822", "#F5CDB4", "#F8AFA8")) + 
+  theme(legend.position='top',axis.text.x = element_text(angle=45, hjust=1),legend.text=element_text(size=8),legend.key.size = unit(.3, "cm"))  + xlab('') + ylab('number of games')
+
+grid.arrange(g1,g2,ncol=2)
+
+#bue win
+global %>% 
+  dplyr::select(blueTeamTag, bResult,Year) %>% 
+  dplyr::filter(bResult==1) %>% 
+  dplyr::group_by(blueTeamTag,Year) %>% 
+  summarise(number=n()) %>% 
+  ggplot(aes(x=blueTeamTag,y=number,fill=number)) + 
+  geom_bar(stat='identity',width = 0.75) + 
+  theme(legend.position='top',axis.text.x = element_text(angle=45, hjust=1,size=7)) + 
+  facet_wrap(~Year,ncol=1) + 
+  xlab('') + ylab('') + scale_fill_gradient(name='# of wins as Blue Team',low="#85D4E3", high="#3B9AB2")
+#red win
+global %>% 
+  dplyr::select(redTeamTag, rResult,Year) %>% 
+  dplyr::filter(rResult==1) %>% 
+  dplyr::group_by(redTeamTag,Year) %>% 
+  summarise(number=n()) %>% 
+  ggplot(aes(x=redTeamTag,y=number,fill=number)) + 
+  geom_bar(stat='identity',width = 0.75) + 
+  theme(legend.position='top',axis.text.x = element_text(angle=45, hjust=1,size=7)) + 
+  facet_wrap(~Year,ncol=1) + 
+  xlab('') + ylab('') + scale_fill_gradient(name='# of wins as Red Team',low="#F8AFA8", high="#F21A00")
+#Number of games per Season, breakdown per League and Year
+global %>% 
+  group_by(League,Season,Year) %>% summarise(number=n()) %>% 
+  ggplot(aes(x=Year,y=League, size=number,color=Season)) + 
+  geom_point() + facet_wrap(~Season) + 
+  theme(legend.position="top",legend.text=element_text(size=8),legend.key.size = unit(.4, "cm")) + 
+  scale_color_manual(values=c("#3B9AB2", "#78B7C5", "#EBCC2A", "#E1AF00", "#F21A00","#9A8822", "#F5CDB4", "#F8AFA8"))
+data[col].unique
+#3.4 Average length of games
+global %>% 
+  dplyr::select(League, Season, gamelength) %>% 
+  group_by(League) %>% 
+  ggplot(aes(x=gamelength)) + 
+  geom_density(aes(fill=League),alpha=.5) + 
+  facet_wrap(~League,ncol=4) + 
+  theme(legend.position='top') +
+  scale_fill_manual(values=c("#3B9AB2", "#78B7C5", "#EBCC2A", "#E1AF00", "#F21A00","#9A8822", "#F5CDB4", "#F8AFA8")) + xlab('[minutes]') + ylab('')
+#4 Details per Match
+gold<-read.csv('goldValues.csv',sep=',')
+death<-read.csv('deathValues.csv',sep=',')
+objects<-read.csv('objValues.csv',sep=',')
+bans<-read.csv('banValues.csv',sep=',')
+#Gold difference vs. time played
+game_id<-1
+game1<-data.frame(t(gold[game_id,3:83]))
+View(game1)
+colnames(game1)<-'gold_diff'
+features<-rownames(game1)
+rownames(game1)<-1:nrow(game1)
+game1$time<-rep(1:nrow(game1))
+game1$MatchHistory<-rep(global$MatchHistory[1],nrow(game1))
+res<-data.frame(merge(game1, global %>% select(MatchHistory,League,Season,Year,blueTeamTag,bResult, redTeamTag,rResult,gamelength),by='MatchHistory',y.all=T))
+res$blueTeam<-ifelse(res$bResult==1,"BLUE:W ; RED:L","BLUE:L ; RED:W")
+
+res %>% na.omit() %>% 
+  ggplot(aes(x=time,y=gold_diff,shape=blueTeam,fill=ifelse(gold_diff>0,"blue","red"))) + 
+  geom_histogram(stat='identity',size=1) + 
+  scale_fill_manual(name="Team",values=c(blue="#3B9AB2",red="#F21A00")) + 
+  scale_shape_manual(name='Result',values = c(19)) + 
+  theme(legend.position='none') + ggtitle(res$blueTeam) + 
+  xlab('minutes') + ylab('Gold difference btw Blue and Red team')
+class(gold)
