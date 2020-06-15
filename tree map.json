@@ -1,0 +1,233 @@
+[
+  {
+    "key": "All-Year",
+    "region": "2015",
+    "subregion": "Rek Sai",
+    "value": 56
+  },
+  {
+    "key": "All-Year",
+    "region": "2015",
+    "subregion": "Alistar",
+    "value": 34
+  },
+  {
+  "key": "All-Year",
+  "region": "2015",
+  "subregion": "Maokai",
+  "value": 30
+},
+  {
+  "key": "All-Year",
+  "region": "2015",
+  "subregion": "Gragas",
+  "value": 56
+},
+  {
+  "key": "All-Year",
+  "region": "2015",
+  "subregion": "Rumble",
+  "value": 28
+},
+  {
+  "key": "All-Year",
+  "region": "2015",
+  "subregion": "Evelynn",
+  "value": 26
+},
+  {
+    "key": "All-Year",
+    "region": "2015",
+    "subregion": "Gnar",
+    "value": 56
+  },
+  {
+    "key": "All-Year",
+    "region": "2015",
+    "subregion": "Corki",
+    "value": 25
+  },
+  {
+    "key": "All-Year",
+    "region": "2015",
+    "subregion": "Nunu",
+    "value": 23
+  },
+  {
+    "key": "All-Year",
+    "region": "2015",
+    "subregion": "JarvanIV",
+    "value": 34
+  },
+
+
+
+  {
+    "key": "All-Year",
+    "region": "2016",
+    "subregion": "Elise",
+    "value": 28
+  },
+  {
+    "key": "All-Year",
+    "region": "2016",
+    "subregion": "Alistar",
+    "value": 32
+  },
+  {
+    "key": "All-Year",
+    "region": "2016",
+    "subregion": "Graves",
+    "value": 38
+  },
+  {
+    "key": "All-Year",
+    "region": "2016",
+    "subregion": "Gragas",
+    "value": 42
+  },
+  {
+    "key": "All-Year",
+    "region": "2016",
+    "subregion": "Trundle",
+    "value": 36
+  },
+  {
+    "key": "All-Year",
+    "region": "2016",
+    "subregion": "Sivir",
+    "value": 32
+  },
+  {
+    "key": "All-Year",
+    "region": "2016",
+    "subregion": "Ezreal",
+    "value": 30
+  },
+  {
+    "key": "All-Year",
+    "region": "2016",
+    "subregion": "Kindred",
+    "value": 32
+  },
+  {
+    "key": "All-Year",
+    "region": "2016",
+    "subregion": "Lucian",
+    "value": 24
+  },
+  {
+  "key": "All-Year",
+  "region": "2016",
+  "subregion": "RekSai",
+  "value": 30
+},
+  {
+    "key": "All-Year",
+    "region": "2017",
+    "subregion": "LeeSin",
+    "value": 28
+  },
+  {
+    "key": "All-Year",
+    "region": "2017",
+    "subregion": "Graves",
+    "value": 24
+  },
+  {
+    "key": "All-Year",
+    "region": "2017",
+    "subregion": "Rengar",
+    "value": 24
+  },
+  {
+    "key": "All-Year",
+    "region": "2017",
+    "subregion": "Ezreal",
+    "value": 32
+  },
+  {
+    "key": "All-Year",
+    "region": "2017",
+    "subregion": "Khazix",
+    "value": 20
+  },
+  {
+    "key": "All-Year",
+    "region": "2017",
+    "subregion": "Karma",
+    "value": 17
+  },
+  {
+    "key": "All-Year",
+    "region": "2017",
+    "subregion": "Ashe",
+    "value": 14
+  },
+  {
+    "key": "All-Year",
+    "region": "2017",
+    "subregion": "Nami",
+    "value": 13
+  },
+  {
+    "key": "All-Year",
+    "region": "2015",
+    "subregion": "Rumble",
+    "value": 13
+  },
+  {
+    "key": "All-Year",
+    "region": "2015",
+    "subregion": "Nautilus",
+    "value": 9
+  },
+  {
+    "key": "All-Year",
+    "region": "2015",
+    "subregion": "Riranna",
+    "value": 8
+  },
+  {
+    "key": "All-Year",
+    "region": "2015",
+    "subregion": "Talon",
+    "value": 7
+  },
+  {
+    "key": "All-Year",
+    "region": "2015",
+    "subregion": "Lulu",
+    "value": 13
+  },
+  {
+    "key": "All-Year",
+    "region": "2015",
+    "subregion": "Maokai",
+    "value": 6
+  },
+  {
+    "key": "All-Year",
+    "region": "2015",
+    "subregion": "Varus",
+    "value": 6
+  },
+  {
+    "key": "All-Year",
+    "region": "2015",
+    "subregion": "Corki",
+    "value": 5
+  },
+  {
+    "key": "All-Year",
+    "region": "2015",
+    "subregion": "Gangplank",
+    "value": 5
+  },
+  {
+    "key": "All-Year",
+    "region": "2015",
+    "subregion": "Ryze",
+    "value": 5
+  }
+]
